@@ -1,10 +1,10 @@
 [package]
 name = "aez"
-version = "0.0.4"
+version = "0.0.5"
 authors = ["David Stainton <dawuud@riseup.net>"]
 description = "Rust wrapper for AEZ wide block cipher written in C."
-homepage = "https://github.com/david415/aez"
-repository = "https://github.com/david415/aez"
+homepage = "https://github.com/sphinx-cryptography/aez"
+repository = "https://github.com/sphinx-cryptography/aez"
 documentation = "https://docs.rs/aez/"
 readme = "README.md"
 keywords = ["cryptography", "aez", "ffi", "sprp"]

@@ -1,6 +1,6 @@
 
 # AEZ
-[![](https://travis-ci.org/david415/aez.png?branch=master)](https://www.travis-ci.org/david415/aez) [![](https://img.shields.io/crates/v/aez.svg)](https://crates.io/crates/aez) [![](https://docs.rs/aez/badge.svg)](https://docs.rs/aez/)
+[![](https://travis-ci.org/sphinx-cryptography/aez.png?branch=master)](https://www.travis-ci.org/sphinx-cryptography/aez) [![](https://img.shields.io/crates/v/aez.svg)](https://crates.io/crates/aez) [![](https://docs.rs/aez/badge.svg)](https://docs.rs/aez/)
 
 The AEZ wide-block cipher.
 
@@ -26,7 +26,7 @@ This code has not been formally audited. Use it at your own risk!
 To import `aez`, add the following to the dependencies section of
 your project's `Cargo.toml`:
 ```toml
-aez = "^0.0.4"
+aez = "^0.0.5"
 ```
 Then import the crate as:
 ```rust,no_run
