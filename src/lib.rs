@@ -17,8 +17,9 @@
 pub mod aez;
 pub mod error;
 
-
 #[macro_use]
+#[allow(unused_imports)]
 extern crate serde_derive;
+
 extern crate serde;
 extern crate serde_json;

@@ -39,7 +39,7 @@ impl Error for AezDecryptionError {
         "I'm a AezDecryptionError."
     }
 
-    fn cause(&self) -> Option<&Error> {
+    fn cause(&self) -> Option<&dyn Error> {
         use self::AezDecryptionError::*;
         match *self {
             DecryptionError => None,

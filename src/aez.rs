@@ -49,7 +49,7 @@ pub fn encrypt(key: &[u8; AEZ_KEY_SIZE], nonce: &[u8; AEZ_NONCE_SIZE], mesg: &Ve
 
 pub fn decrypt(key: &[u8; AEZ_KEY_SIZE], nonce: &[u8; AEZ_NONCE_SIZE], mesg: &Vec<u8>) -> Result<Vec<u8>, AezDecryptionError> {
     let mut plaintext = vec![0u8; mesg.len()];
-    let mut ret: c_int = 0;
+    let ret: c_int;
     unsafe {
         ret = aez_setup_decrypt(key as *const u8, nonce as *const u8, ptr::null(), 0, 0, mesg.as_ptr(), mesg.len(), plaintext.as_mut_ptr());
     }
