@@ -35,7 +35,7 @@
  // For more information, please refer to <http://unlicense.org/>
  */
 
-//#include "crypto_aead.h"
+#include "crypto_aead.h"
 #include <stdint.h>
 #include <stddef.h>
 
@@ -903,24 +903,42 @@ static int blake2b(void *out, size_t outlen,
     return 0;
 }
 
-void aez_setup_encrypt(char *key, char *nonce,
-                       char *ad, unsigned adlen, unsigned alen,
-                       char *src, unsigned srclen, char *dst)
+/* ------------------------------------------------------------------------- */
+/* aez mapping for CAESAR competition                                        */
+
+int crypto_aead_encrypt(
+    unsigned char *c,unsigned long long *clen,
+    const unsigned char *m,unsigned long long mlen,
+    const unsigned char *ad,unsigned long long adlen,
+    const unsigned char *nsec,
+    const unsigned char *npub,
+    const unsigned char *k
+)
 {
     aez_ctx_t ctx;
-    aez_setup((unsigned char*)key, (unsigned)48, &ctx);
-    aez_encrypt(&ctx, nonce, (unsigned)16,
-                ad, adlen, alen,
-                src, srclen, dst);
+    (void)nsec;
+    if (clen) *clen = mlen+16;
+    aez_setup((unsigned char *)k, 48, &ctx);
+    aez_encrypt(&ctx, (char *)npub, 12,
+                 (char *)ad, (unsigned)adlen, 16,
+                 (char *)m, (unsigned)mlen, (char *)c);
+    return 0;
 }
 
-int aez_setup_decrypt(char *key, char *nonce,
-                       char *ad, unsigned adlen, unsigned alen,
-                       char *src, unsigned srclen, char *dst)
+int crypto_aead_decrypt(
+    unsigned char *m,unsigned long long *mlen,
+    unsigned char *nsec,
+    const unsigned char *c,unsigned long long clen,
+    const unsigned char *ad,unsigned long long adlen,
+    const unsigned char *npub,
+    const unsigned char *k
+)
 {
     aez_ctx_t ctx;
-    aez_setup((unsigned char*)key, (unsigned)48, &ctx);
-    return aez_decrypt(&ctx, nonce, (unsigned)16,
-                ad, adlen, alen,
-                src, srclen, dst);
+    (void)nsec;
+    if (mlen) *mlen = clen-16;
+    aez_setup((unsigned char *)k, 48, &ctx);
+    return aez_decrypt(&ctx, (char *)npub, 12,
+                 (char *)ad, (unsigned)adlen, 16,
+                 (char *)c, (unsigned)clen, (char *)m);
 }
