@@ -2,7 +2,7 @@
 name = "aez"
 version = "0.0.6"
 edition = "2018"
-authors = ["David Stainton <dawuud@riseup.net>"]
+authors = ["Katzenpost Developers"]
 description = "Rust wrapper for AEZ wide block cipher written in C."
 homepage = "https://github.com/sphinx-cryptography/aez"
 repository = "https://github.com/sphinx-cryptography/aez"
