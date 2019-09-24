@@ -18,7 +18,7 @@ Works. Tests using test vectors pass.
 
 # warning
 
-This code has not been formally audited. Use it at your own risk!
+This code has not been formally audited. Use it at your own risk.
 
 
 # usage
@@ -26,7 +26,7 @@ This code has not been formally audited. Use it at your own risk!
 To import `aez`, add the following to the dependencies section of
 your project's `Cargo.toml`:
 ```toml
-aez = "^0.0.6"
+aez = "^0.0.7"
 ```
 Then import the crate as:
 ```rust,no_run
@@ -36,7 +36,8 @@ extern crate aez;
 # acknowledgments
 
 Thanks to Ted Krovetz who wrote the AEZ v5 cipher in C with AES-NI and vector
-hardware optimizations.
+hardware optimizations. Thanks to James McGlashan for making these bindings
+more efficient.
 
 
 # license

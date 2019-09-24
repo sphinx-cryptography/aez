@@ -1,6 +1,6 @@
 [package]
 name = "aez"
-version = "0.0.6"
+version = "0.0.7"
 edition = "2018"
 authors = ["Katzenpost Developers"]
 description = "Rust wrapper for AEZ wide block cipher written in C."
