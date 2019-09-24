@@ -14,6 +14,45 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+//! [AEZv5](https://web.cs.ucdavis.edu/~rogaway/aez).
+//!
+//! > AEZ is an authenticated-encryption (AE) scheme optimized for ease of correct
+//! > use (“AE made EZ”). It was invented by Viet Tung Hoang, Ted Krovetz, and
+//! > Phillip Rogaway. The algorithm encrypts a plaintext by appending to it a fixed
+//! > authentication block (some zero bits) and then enciphering the resulting string
+//! > with an arbitrary-input-length blockcipher, this tweaked by the nonce, AD, and
+//! > authenticator length. The approach results in strong security and usability
+//! > properties, including nonce-reuse misuse resistance, automatic exploitation of
+//! > decryption-verified redundancy, and arbitrary, user-selectable length expansion.
+//! > AEZ is parallelizable and its computational cost is roughly that of OCB. On recent
+//! > Intel processors, AEZ runs at about 0.7 cpb.
+//!
+//! The C implementation is compiled assuming AES-NI support. There is no software fallback
+//! implemented in this crate.
+//!
+//! ```
+//! # use aez::Aez;
+//! # let secret_key = [0u8; 48];
+//! // The secret key may be any byte slice. 48 bytes are recommended.
+//! let cipher = Aez::new(&secret_key);
+//!
+//! // Expand the ciphertext by 16 bytes for authentication.
+//! let mut pt = b"Hello world!".to_vec();
+//! let mut ct = vec![0u8; pt.len() + 16];
+//!
+//! // Encrypt the message with a nonce, and optionally additional data.
+//! cipher.encrypt(&[0], None, &pt, &mut ct);
+//!
+//! // Decrypt and validate the ciphertext.
+//! cipher.decrypt(&[0], None, &ct, &mut pt).expect("invalid ciphertext");
+//!
+//! // Message decrypted!
+//! assert_eq!(pt, b"Hello world!");
+//! ```
+
+#[cfg(not(any(target_arch = "x86", target_arch = "x86_64")))]
+compile_error!("AEZ requires x86 or x86_64.");
+
 #[repr(C)]
 #[repr(align(16))]
 pub struct Aez([u8; 144]);
@@ -45,6 +84,7 @@ extern "C" {
 }
 
 impl Aez {
+    /// Create a new Aez instance keyed with variable length. Aez recommends a 48 byte key.
     pub fn new(key: &[u8]) -> Self {
         let mut aez = Aez([0u8; 144]);
 
@@ -55,6 +95,11 @@ impl Aez {
         aez
     }
 
+    /// Encrypt a message. The nonce length must be `1..=16`. The ciphertext may be up to 16 bytes
+    /// larger than the message, these extra bytes add authentication. Additionally, the ciphertext
+    /// must not be larger than `2^32 - 1`.
+    ///
+    /// Will panic if the above constraints are broken.
     pub fn encrypt<'a>(&self, n: &[u8], ad: impl Into<Option<&'a [u8]>>, pt: &[u8], ct: &mut [u8]) {
         assert!(
             ct.len() >= pt.len(),
@@ -92,6 +137,11 @@ impl Aez {
         }
     }
 
+    /// Decrypt a message. The nonce length must be `1..=16`. The ciphertext may be up to 16 bytes
+    /// larger than the message, these extra bytes add authentication. Additionally, the ciphertext
+    /// must not be larger than `2^32 - 1`.
+    ///
+    /// Will panic if the above constraints are broken.
     pub fn decrypt<'a>(
         &self,
         n: &[u8],
