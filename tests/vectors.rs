@@ -56,8 +56,8 @@ fn vectors() {
         let cipher = Aez::new(&k);
 
         let aad = match aad.len() {
-            0 => &[][..],
-            1 => &aad[0],
+            0 => None,
+            1 => Some(&*aad[0]),
             n => {
                 eprintln!("skipping AAD test with {} parts", n);
                 continue;

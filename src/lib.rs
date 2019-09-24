@@ -55,20 +55,35 @@ impl Aez {
         aez
     }
 
-    pub fn encrypt(&self, n: &[u8], ad: &[u8], pt: &[u8], ct: &mut [u8]) {
+    pub fn encrypt<'a>(&self, n: &[u8], ad: impl Into<Option<&'a [u8]>>, pt: &[u8], ct: &mut [u8]) {
         assert!(
             ct.len() >= pt.len(),
             "Ciphertext must not be smaller than the plaintext."
         );
+        assert!(ct.len() < core::u32::MAX as usize, "ciphertext length too long");
+        assert!(
+            ct.len() - pt.len() <= 16,
+            "tau is bounded up to 16 for this C implementation."
+        );
         assert!(n.len() > 0, "Nonce must not have length zero.");
+
+        let ad = ad.into();
 
         unsafe {
             aez_encrypt(
                 self,
                 n.as_ptr(),
                 n.len() as u32,
-                if ad.len() == 0 { core::ptr::null() } else { ad.as_ptr() },
-                ad.len() as u32,
+                if let Some(ad) = ad {
+                    ad.as_ptr()
+                } else {
+                    core::ptr::null()
+                },
+                if let Some(ad) = ad {
+                    ad.len() as u32
+                } else {
+                    0
+                },
                 ct.len() as u32 - pt.len() as u32,
                 pt.as_ptr(),
                 pt.len() as u32,
@@ -77,20 +92,41 @@ impl Aez {
         }
     }
 
-    pub fn decrypt(&self, n: &[u8], ad: &[u8], ct: &[u8], pt: &mut [u8]) -> Result<(), ()> {
+    pub fn decrypt<'a>(
+        &self,
+        n: &[u8],
+        ad: impl Into<Option<&'a [u8]>>,
+        ct: &[u8],
+        pt: &mut [u8],
+    ) -> Result<(), ()> {
         assert!(
             ct.len() >= pt.len(),
             "Ciphertext must not be smaller than the plaintext."
         );
-        assert!(n.len() > 0, "Nonce must not have length zero.");
+        assert!(ct.len() < core::u32::MAX as usize, "ciphertext length too long");
+        assert!(
+            ct.len() - pt.len() <= 16,
+            "tau is bounded up to 16 for this C implementation."
+        );
+        assert!(n.len() != 0 && n.len() <= 16, "invalid nonce");
+
+        let ad = ad.into();
 
         match unsafe {
             aez_decrypt(
                 self,
                 n.as_ptr(),
                 n.len() as u32,
-                if ad.len() == 0 { core::ptr::null() } else { ad.as_ptr() },
-                ad.len() as u32,
+                if let Some(ad) = ad {
+                    ad.as_ptr()
+                } else {
+                    core::ptr::null()
+                },
+                if let Some(ad) = ad {
+                    ad.len() as u32
+                } else {
+                    0
+                },
                 ct.len() as u32 - pt.len() as u32,
                 ct.as_ptr(),
                 ct.len() as u32,
