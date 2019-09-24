@@ -18,6 +18,12 @@ git = "https://github.com/james-darkfox/criterion.rs"
 branch = "cycles"
 features = ["cycles"]
 
+[dev-dependencies]
+serde = "1.0.101"
+serde_derive = "1.0.101"
+serde_json = "1.0.40"
+hex = "0.4.0"
+
 [[bench]]
 name = "aez"
 harness = false

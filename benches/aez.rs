@@ -28,7 +28,7 @@ fn bench(c: &mut Criterion<CyclesPerByte>) {
             let aez = Aez::new(&[0u8; 48]);
             let mut ct = vec![0u8; *size + 16];
             aez.encrypt(&[0], &[], &buf, &mut ct);
-            let mut pt = vec![0u8; *size]; 
+            let mut pt = vec![0u8; *size];
             b.iter(|| aez.decrypt(&[0], &[], &ct, &mut pt).unwrap())
         });
     }
