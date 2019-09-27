@@ -14,9 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-use criterion::{
-    criterion_group, criterion_main, measurement::CyclesPerByte, BenchmarkId, Criterion, Throughput,
-};
+use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion, Throughput};
+use criterion_cycles_per_byte::CyclesPerByte;
 
 use aez::Aez;
 
@@ -25,9 +24,7 @@ fn bench(c: &mut Criterion<CyclesPerByte>) {
 
     const KB: usize = 1024;
 
-    group.bench_function("setup", |b| {
-        b.iter(|| Aez::new(&[0u8; 48]))
-    });
+    group.bench_function("setup", |b| b.iter(|| Aez::new(&[0u8; 48])));
 
     for size in [KB, 2 * KB, 4 * KB, 8 * KB, 16 * KB].into_iter() {
         let buf = vec![0u8; *size];
